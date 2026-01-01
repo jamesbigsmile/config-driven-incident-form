@@ -76,8 +76,21 @@
         "visibleIf": {
           "field": "requires_investigation",
           "equals": "Yes"
-        }
-      }
+          },
+        "permissions": {                   
+        "roles": ["admin", "manager"]    
+         }
+      },
+      {
+        "id": "root_cause",
+        "label": "Suspected Root Cause",
+        "type": "textarea",
+        "required": false,
+        "permissions": {
+        "roles": ["manager"]
+  }
+}
+
     ]
   },
         

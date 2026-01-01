@@ -97,3 +97,16 @@ button[type="submit"]:hover {
 .validation-summary.show {
   display: block;
 }
+.field.permission-hidden {
+  display: none;
+}
+.field.permission-hidden::before {
+  content: "Permission denied (role required)";
+  display: block;
+  background: #fed7d7;
+  color: #c53030;
+  padding: 0.5rem;
+  margin: -1rem 0 1rem 0;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}

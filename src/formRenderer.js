@@ -1,7 +1,7 @@
 async function loadConfig() {
   const params = new URLSearchParams(window.location.search);
   const formType = params.get('form') || 'incident';
-  const lang = params.get('lang') || 'en';  // ← NEW: detect lang
+  const lang = params.get('lang') || 'en';
   
   const configFile =
     formType === 'audit'
@@ -16,30 +16,25 @@ async function loadConfig() {
   
   const config = await response.json();
   
-  // ← NEW: Override with language if available
   if (config.languages && config.languages[lang]) {
     const langData = config.languages[lang];
     if (langData.title) config.title = langData.title;
-    // Add more fields like description here if needed
   }
   
   console.log(`Loaded ${formType} config in ${lang}:`, config);
   return config;
 }
 
-
-function createValidationSummary(formEl) {
-  const validationSummary = document.createElement('div');
-  validationSummary.id = 'validation-summary';
-  validationSummary.className = 'validation-summary';
-  formEl.appendChild(validationSummary);
-  return validationSummary;
-}
-
-function createField(field) {
+function createField(field, userRole = 'user') {
   const wrapper = document.createElement('div');
   wrapper.className = 'field';
   wrapper.dataset.fieldId = field.id;
+
+  // Permissions check (AFTER building field)
+  if (field.permissions && (!field.permissions.roles || !field.permissions.roles.includes(userRole))) {
+    wrapper.classList.add('permission-hidden');
+    return wrapper;
+  }
 
   const label = document.createElement('label');
   label.setAttribute('for', field.id);
@@ -124,11 +119,13 @@ function applyVisibilityRules(formEl) {
   Object.values(fieldMap).forEach(input => {
     input.addEventListener('change', updateVisibility);
   });
-
   updateVisibility();
 }
 
 function renderForm(config) {
+  const params = new URLSearchParams(window.location.search);
+  const userRole = params.get('role') || 'user';  // Pass to fields
+
   const formMeta = document.getElementById('form-metadata');
   const formEl = document.getElementById('dynamic-form');
 
@@ -164,7 +161,7 @@ function renderForm(config) {
     }
 
     (section.fields || []).forEach(field => {
-      const fieldEl = createField(field);
+      const fieldEl = createField(field, userRole);  // Pass userRole
       sectionEl.appendChild(fieldEl);
     });
 
@@ -176,41 +173,43 @@ function renderForm(config) {
   submit.textContent = 'Submit Incident';
   formEl.appendChild(submit);
 
-formEl.addEventListener('submit', (e) => {
-  e.preventDefault();
-  
-  // Check for validation errors first
-  if (!formEl.checkValidity()) {
-    const validationSummary = document.getElementById('validation-summary') || 
-      createValidationSummary(formEl);  // Create if missing
+  formEl.addEventListener('submit', (e) => {
+    e.preventDefault();
     
-    validationSummary.textContent = 'Please fix the errors above before submitting.';
-    validationSummary.classList.add('show');
-    return;  // Stop here
-  }
-  
-  // Clear any previous validation
-  const validationSummary = document.getElementById('validation-summary');
-  if (validationSummary) {
-    validationSummary.classList.remove('show');
-  }
-  
-  // Collect form data
-  const formData = new FormData(formEl);
-  const data = {};
-  for (const [key, value] of formData.entries()) {
-    data[key] = value;
-  }
-  
-  // Show output
-  const outputSection = document.getElementById('form-output');
-  const outputJson = document.getElementById('output-json');
-  outputJson.textContent = JSON.stringify(data, null, 2);
-  outputSection.classList.remove('hidden');
-});
+    if (!formEl.checkValidity()) {
+      const validationSummary = document.getElementById('validation-summary') || 
+        createValidationSummary(formEl);
+      validationSummary.textContent = 'Please fix the errors above before submitting.';
+      validationSummary.classList.add('show');
+      return;
+    }
+    
+    const validationSummary = document.getElementById('validation-summary');
+    if (validationSummary) {
+      validationSummary.classList.remove('show');
+    }
+    
+    const formData = new FormData(formEl);
+    const data = {};
+    for (const [key, value] of formData.entries()) {
+      data[key] = value;
+    }
 
+    const outputSection = document.getElementById('form-output');
+    const outputJson = document.getElementById('output-json');
+    outputJson.textContent = JSON.stringify(data, null, 2);
+    outputSection.classList.remove('hidden');
+  });
 
   applyVisibilityRules(formEl);
+}
+
+function createValidationSummary(formEl) {
+  const validationSummary = document.createElement('div');
+  validationSummary.id = 'validation-summary';
+  validationSummary.className = 'validation-summary';
+  formEl.appendChild(validationSummary);
+  return validationSummary;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -219,3 +218,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderForm(config);
   }
 });
+
