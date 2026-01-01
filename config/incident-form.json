@@ -1,0 +1,130 @@
+{
+  "formId": "ehs_incident_form_v1",
+  "title": "EHS Incident Report",
+  "description": "Capture key details about workplace incidents for investigation and corrective actions.",
+  "layout": {
+    "columns": 1,
+    "showSectionNumbers": true
+  },
+  "sections": [
+    {
+      "id": "incident_details",
+      "label": "Incident Details",
+      "order": 1,
+      "helpText": "Describe what happened as clearly as possible.",
+      "fields": [
+        {
+          "id": "incident_date",
+          "label": "Incident Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "incident_time",
+          "label": "Incident Time",
+          "type": "time",
+          "required": true
+        },
+        {
+          "id": "location",
+          "label": "Location",
+          "type": "text",
+          "required": true,
+          "placeholder": "e.g., Line 3 – Packaging Area"
+        },
+        {
+          "id": "summary",
+          "label": "Incident Summary",
+          "type": "textarea",
+          "required": true,
+          "rows": 4,
+          "helpText": "Include what happened, immediate impact, and any equipment involved."
+        },
+        {
+          "id": "incident_severity",
+          "label": "Incident Serverity",
+          "type": "select",
+          "required":true,
+          "options":[
+            "Minor",
+            "Moderate",
+            "Major",
+            "Critical"
+          ],
+          "helpText": "Select the initial assessed serverity of this incident"
+        }
+        
+      ]
+    },
+    {
+      "id": "people_involved",
+      "label": "People Involved",
+      "order": 2,
+      "fields": [
+        {
+          "id": "injured_person_name",
+          "label": "Injured Person",
+          "type": "text",
+          "required": false
+        },
+        {
+          "id": "role",
+          "label": "Role",
+          "type": "select",
+          "required": false,
+          "options": [
+            "Operator",
+            "Supervisor",
+            "Maintenance",
+            "Contractor",
+            "Visitor"
+          ]
+        },
+        {
+          "id": "witnesses",
+          "label": "Witnesses",
+          "type": "textarea",
+          "required": false,
+          "rows": 3
+        }
+      ]
+    },
+    {
+      "id": "corrective_actions",
+      "label": "Corrective Actions",
+      "order": 3,
+      "helpText": "Capture containment, root cause, and long-term actions.",
+      "fields": [
+        {
+          "id": "immediate_actions",
+          "label": "Immediate Actions Taken",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "root_cause",
+          "label": "Suspected Root Cause",
+          "type": "textarea",
+          "required": false
+        },
+        {
+          "id": "follow_up_required",
+          "label": "Follow-up Required?",
+          "type": "select",
+          "required": true,
+          "options": ["Yes - Action Plan Needed", "No - No Further Action"]
+        },
+        {
+          "id": "target_completion_date",
+          "label": "Target Completion Date",
+          "type": "date",
+          "required": false,
+          "visibleIf": {
+            "field": "follow_up_required",
+            "equals": "Yes"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "formId": "site_safety_audit_v1",
+  "title": "Site Safety Audit",
+  "description": "Record observations from a site safety walk-through.",
+  "layout": {
+    "columns": 1,
+    "showSectionNumbers": true
+  },
+  "sections": [
+    {
+      "id": "audit_overview",
+      "label": "Audit Overview",
+      "order": 1,
+      "fields": [
+        {
+          "id": "audit_date",
+          "label": "Audit Date",
+          "type": "date",
+          "required": true
+        },
+        {
+          "id": "auditor_name",
+          "label": "Auditor Name",
+          "type": "text",
+          "required": true
+        },
+        {
+          "id": "area",
+          "label": "Area / Line",
+          "type": "text",
+          "required": true
+        }
+      ]
+    },
+    {
+      "id": "observations",
+      "label": "Observations",
+      "order": 2,
+      "fields": [
+        {
+          "id": "safe_conditions",
+          "label": "Safe Conditions Observed",
+          "type": "textarea",
+          "required": false,
+          "rows": 3
+        },
+        {
+          "id": "unsafe_conditions",
+          "label": "Unsafe Conditions Observed",
+          "type": "textarea",
+          "required": false,
+          "rows": 3
+        },
+        {
+          "id": "overall_rating",
+          "label": "Overall Safety Rating",
+          "type": "select",
+          "required": true,
+          "options": ["Good", "Fair", "Poor"]
+        }
+      ]
+    }
+  ]
+}
