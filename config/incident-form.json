@@ -1,6 +1,14 @@
 {
   "formId": "ehs_incident_form_v1",
   "title": "EHS Incident Report",
+    "languages": {                     
+    "en": {
+      "title": "EHS Incident Report"
+    },
+    "fr": {
+      "title": "Rapport d'incident EHS"
+    }
+  },
   "description": "Capture key details about workplace incidents for investigation and corrective actions.",
   "layout": {
     "columns": 1,
@@ -24,7 +32,7 @@
           "label": "Incident Time",
           "type": "time",
           "required": true
-        },
+        },      
         {
           "id": "location",
           "label": "Location",
@@ -52,10 +60,29 @@
             "Critical"
           ],
           "helpText": "Select the initial assessed serverity of this incident"
+        },
+        {
+        "id": "requires_investigation",
+        "label": "Requires Investigation?",
+        "type": "select",
+        "required": true,
+        "options": ["Yes", "No"]
+      },
+      {
+        "id": "investigation_due_date",
+        "label": "Investigation Due Date",
+        "type": "date",
+        "required": false,
+        "visibleIf": {
+          "field": "requires_investigation",
+          "equals": "Yes"
         }
+      }
+    ]
+  },
         
-      ]
-    },
+      
+    
     {
       "id": "people_involved",
       "label": "People Involved",

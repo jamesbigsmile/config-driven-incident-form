@@ -1,6 +1,8 @@
 async function loadConfig() {
   const params = new URLSearchParams(window.location.search);
   const formType = params.get('form') || 'incident';
+  const lang = params.get('lang') || 'en';  // ← NEW: detect lang
+  
   const configFile =
     formType === 'audit'
       ? '../config/audit-form.json'
@@ -11,9 +13,28 @@ async function loadConfig() {
     console.error('Failed to load config', response.statusText);
     return null;
   }
-  return response.json();
+  
+  const config = await response.json();
+  
+  // ← NEW: Override with language if available
+  if (config.languages && config.languages[lang]) {
+    const langData = config.languages[lang];
+    if (langData.title) config.title = langData.title;
+    // Add more fields like description here if needed
+  }
+  
+  console.log(`Loaded ${formType} config in ${lang}:`, config);
+  return config;
 }
 
+
+function createValidationSummary(formEl) {
+  const validationSummary = document.createElement('div');
+  validationSummary.id = 'validation-summary';
+  validationSummary.className = 'validation-summary';
+  formEl.appendChild(validationSummary);
+  return validationSummary;
+}
 
 function createField(field) {
   const wrapper = document.createElement('div');
@@ -155,19 +176,39 @@ function renderForm(config) {
   submit.textContent = 'Submit Incident';
   formEl.appendChild(submit);
 
-  formEl.addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(formEl);
-    const data = {};
-    for (const [key, value] of formData.entries()) {
-      data[key] = value;
-    }
+formEl.addEventListener('submit', (e) => {
+  e.preventDefault();
+  
+  // Check for validation errors first
+  if (!formEl.checkValidity()) {
+    const validationSummary = document.getElementById('validation-summary') || 
+      createValidationSummary(formEl);  // Create if missing
+    
+    validationSummary.textContent = 'Please fix the errors above before submitting.';
+    validationSummary.classList.add('show');
+    return;  // Stop here
+  }
+  
+  // Clear any previous validation
+  const validationSummary = document.getElementById('validation-summary');
+  if (validationSummary) {
+    validationSummary.classList.remove('show');
+  }
+  
+  // Collect form data
+  const formData = new FormData(formEl);
+  const data = {};
+  for (const [key, value] of formData.entries()) {
+    data[key] = value;
+  }
+  
+  // Show output
+  const outputSection = document.getElementById('form-output');
+  const outputJson = document.getElementById('output-json');
+  outputJson.textContent = JSON.stringify(data, null, 2);
+  outputSection.classList.remove('hidden');
+});
 
-    const outputSection = document.getElementById('form-output');
-    const outputJson = document.getElementById('output-json');
-    outputJson.textContent = JSON.stringify(data, null, 2);
-    outputSection.classList.remove('hidden');
-  });
 
   applyVisibilityRules(formEl);
 }

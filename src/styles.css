@@ -86,3 +86,14 @@ button[type="submit"]:hover {
 .hidden {
   display: none;
 }
+.validation-summary {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #fed7d7;
+  border: 1px solid #f56565;
+  border-radius: 4px;
+  display: none;
+}
+.validation-summary.show {
+  display: block;
+}
